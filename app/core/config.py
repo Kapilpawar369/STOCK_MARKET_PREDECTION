@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7 
 
-    DATABASE_URL: str="sqlite:///./stockpulse.db"
+    DATABASE_URL: str="postgresql://postgres:Millionare@localhost:5432/migrated_db"
     REDIS_URL: str = "redis://localhost:6379/0"
 
     EMAIL_FROM: str = "noreply@stockpulse.app"
@@ -25,8 +25,8 @@ class Settings(BaseSettings):
     FINNHUB_API_KEY: Optional[str] = None
     DEFAULT_TICKERS: str = "AAPL,TSLA,INFY,TCS"
 
-    class Config:
-        env_file = ".env"
+    # class Config:
+    #     env_file = ".env"
 
 settings = Settings()
 
