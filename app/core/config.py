@@ -35,7 +35,10 @@ class Settings(BaseSettings):
 
     DEFAULT_TICKERS: str = "AAPL,TSLA,INFY,TCS"
     STOCK_API_KEY: str
-
+    
+    #payment
+    RAZORPAY_KEY_ID: str | None = None
+    RAZORPAY_KEY_SECRET: str | None = None
 
     class Config:
         env_file = ".env"

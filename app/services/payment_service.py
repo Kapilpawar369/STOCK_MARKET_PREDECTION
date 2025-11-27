@@ -11,11 +11,19 @@ class PaymentService:
     def __init__(self, db: Session):
         self.db = db
 
+    # ─────────────────────────────────────────────
+    # GET ALL PAYMENTS FOR CURRENT USER
+    # ─────────────────────────────────────────────
     def list_payments(self, user_id: str) -> List[PaymentOut]:
         if not user_id:
             raise CustomError("User ID is required", 400)
 
-        payments = self.db.query(Payment).filter(Payment.user_id == user_id).all()
+        payments = (
+            self.db.query(Payment)
+            .filter(Payment.user_id == user_id)
+            .order_by(Payment.created_at.desc())
+            .all()
+        )
 
         return [
             PaymentOut(
@@ -27,6 +35,9 @@ class PaymentService:
             for p in payments
         ]
 
+    # ─────────────────────────────────────────────
+    # CREATE PAYMENT ENTRY (LOCAL DB ONLY)
+    # ─────────────────────────────────────────────
     def create_payment(self, user_id: str, payload: PaymentCreate) -> PaymentOut:
         if not user_id:
             raise CustomError("User ID is required", 400)
@@ -43,6 +54,7 @@ class PaymentService:
             amount=payload.amount,
             currency=payload.currency.upper(),
             status="CREATED",
+            provider="manual", 
         )
 
         self.db.add(payment)
@@ -52,11 +64,16 @@ class PaymentService:
             self.db.refresh(payment)
         except Exception:
             self.db.rollback()
-            raise CustomError("Payment creation failed, please try again", 500)
+            raise CustomError(
+                "Payment creation failed, please try again",
+                500
+            )
 
         return PaymentOut(
-            id=payment.id,
-            amount=payment.amount,
-            currency=payment.currency,
-            status=payment.status,
-        )
+        id=payment.id,
+        amount=payment.amount,
+        currency=payment.currency,
+        status=payment.status,
+        provider=payment.provider,  
+    )
+

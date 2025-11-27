@@ -5,6 +5,7 @@ venv/
 # Python cache
 __pycache__/
 *.pyc
+logs/
 
 # Data / ML model files
 *.db
@@ -16,3 +17,4 @@ data/
 # IDE / OS
 .vscode/
 .DS_Store
+
