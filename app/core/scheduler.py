@@ -1,18 +1,48 @@
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+import sentry_sdk
+
 from app.jobs.stock_refresh import run_stock_refresh
 from app.jobs.daily_prediction import run_daily_prediction
 from app.jobs.cleanup_tasks import run_cleanup
 
-scheduler = BackgroundScheduler()
+# ✅ Use explicit timezone to avoid server drift bugs
+scheduler = BackgroundScheduler(timezone="Asia/Kolkata")
+
 
 def start_scheduler():
-    # Every day at 05:00
-    scheduler.add_job(run_stock_refresh, "cron", hour=5, minute=0, id="stock_refresh")
-    # Every day at 06:00
-    scheduler.add_job(run_daily_prediction, "cron", hour=6, minute=0, id="daily_prediction")
-    # Every day at 03:00
-    scheduler.add_job(run_cleanup, "cron", hour=3, minute=0, id="cleanup")
+    if scheduler.running:
+        return  # ✅ Prevent duplicate start on reload
+
+    scheduler.add_job(
+        run_stock_refresh,
+        CronTrigger(hour=5, minute=0),
+        id="stock_refresh",
+        replace_existing=True,
+        max_instances=1,
+        coalesce=True,
+    )
+
+    scheduler.add_job(
+        run_daily_prediction,
+        CronTrigger(hour=6, minute=0),
+        id="daily_prediction",
+        replace_existing=True,
+        max_instances=1,
+        coalesce=True,
+    )
+
+    scheduler.add_job(
+        run_cleanup,
+        CronTrigger(hour=3, minute=0),
+        id="cleanup",
+        replace_existing=True,
+        max_instances=1,
+        coalesce=True,
+    )
+
     scheduler.start()
+
 
 def stop_scheduler():
     if scheduler.running:

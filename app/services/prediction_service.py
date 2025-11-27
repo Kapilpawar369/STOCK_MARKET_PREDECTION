@@ -1,11 +1,14 @@
-from sqlalchemy.orm import Session
-from typing import Dict
-from app.ml.predictor import Predictor
+from app.ml.predictor import predict_price
 
 class PredictionService:
-    def __init__(self, db: Session):
+    def __init__(self, db):
         self.db = db
-        self.predictor = Predictor()
 
-    def predict_symbol_price(self, symbol: str) -> Dict[str, float]:
-        return {"symbol": symbol, "predicted_price": self.predictor.predict(symbol)}
+    def predict_symbol_price(self, symbol: str):
+        # Dummy values for now
+        return predict_price(
+            open_price=100,
+            high=110,
+            low=90,
+            volume=50000
+        )

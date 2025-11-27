@@ -1,8 +1,11 @@
-from typing import List
+import pickle
+from sklearn.linear_model import LinearRegression
 
-class SimpleAverageModel:
-    def fit(self, series: List[float]) -> None:
-        pass  # no-op for average baseline
+def train_and_save_model(X, y):
+    model = LinearRegression()
+    model.fit(X, y)
 
-    def predict(self, window: List[float]) -> float:
-        return sum(window) / len(window) if window else 0.0
+    with open("app/ml/models/trained_model.pkl", "wb") as file:
+        pickle.dump(model, file)
+
+    return model

@@ -1,4 +1,7 @@
-from typing import List
-
-def last_n_days(prices: List[float], n: int = 5) -> List[float]:
-    return prices[-n:] if len(prices) >= n else prices
+def create_features(df):
+    """
+    Selects useful features for training.
+    """
+    X = df[["open", "high", "low", "volume"]]
+    y = df["close"]
+    return X, y

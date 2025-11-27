@@ -1,6 +1,8 @@
-from typing import List
+import pandas as pd
 
-def clean_prices(prices: List[float]) -> List[float]:
-    # Remove negatives, fill missing with last value
-    cleaned = [max(p, 0.01) for p in prices]
-    return cleaned
+def clean_data(df: pd.DataFrame):
+    """
+    Removes missing values from dataset.
+    """
+    df = df.dropna()
+    return df

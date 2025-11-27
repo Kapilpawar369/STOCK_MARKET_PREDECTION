@@ -1,8 +1,7 @@
-from typing import List
-import random
+import pandas as pd
 
-class DatasetLoader:
-    def load_prices(self, symbol: str, days: int = 30) -> List[float]:
-        # Placeholder: generate synthetic price series
-        base = random.uniform(50, 200)
-        return [round(base + random.uniform(-2, 2), 2) for _ in range(days)]
+def load_raw_data(filepath: str):
+    """
+    Loads raw stock data from a CSV file.
+    """
+    return pd.read_csv(filepath)

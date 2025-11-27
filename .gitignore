@@ -1,0 +1,18 @@
+# Virtual Environment
+venv/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Data / ML model files
+*.db
+*.pkl
+*.joblib
+*.h5
+data/
+
+# IDE / OS
+.vscode/
+.DS_Store

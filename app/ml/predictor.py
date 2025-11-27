@@ -1,16 +1,19 @@
-from app.ml.data.dataset_loader import DatasetLoader
-from app.ml.preprocessing import clean_prices
-from app.ml.feature_engineering import last_n_days
-from app.ml.models.model_builder import SimpleAverageModel
+import pickle
+import numpy as np
+import os
 
-class Predictor:
-    def __init__(self, window: int = 5):
-        self.loader = DatasetLoader()
-        self.model = SimpleAverageModel()
-        self.window = window
+MODEL_PATH = "app/ml/models/trained_model.pkl"
 
-    def predict(self, symbol: str) -> float:
-        prices = self.loader.load_prices(symbol)
-        cleaned = clean_prices(prices)
-        window = last_n_days(cleaned, self.window)
-        return round(self.model.predict(window), 2)
+def load_model():
+    if not os.path.exists(MODEL_PATH):
+        raise RuntimeError("❌ Model file not found. Train the model first.")
+
+    with open(MODEL_PATH, "rb") as file:
+        return pickle.load(file)
+
+model = load_model()
+
+def predict_price(open_price, high, low, volume):
+    features = np.array([[open_price, high, low, volume]])
+    prediction = model.predict(features)
+    return float(prediction[0])

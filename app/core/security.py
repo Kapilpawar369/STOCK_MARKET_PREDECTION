@@ -4,7 +4,12 @@ from typing import Optional
 import jwt
 from jwt import PyJWTError, ExpiredSignatureError   # ✅ correct exceptions
 from passlib.context import CryptContext
-from app.core.config import settings
+from app.core.config import get_settings
+
+settings = get_settings()
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

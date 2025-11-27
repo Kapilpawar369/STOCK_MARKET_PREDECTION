@@ -1,33 +1,45 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
+from functools import lru_cache
+
 
 class Settings(BaseSettings):
     APP_NAME: str = "StockPulse"
     ENV: str = "development"
-    SECRET_KEY: str="supersecretekey"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    DEBUG: bool = False
+
+    # Security
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7 
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    DATABASE_URL: str="postgresql://postgres:Millionare@localhost:5432/migrated_db"
-    REDIS_URL: str = "redis://localhost:6379/0"
+    # Database / Cache
+    DATABASE_URL: str
+    REDIS_URL: Optional[str] = None
 
-    EMAIL_FROM: str = "noreply@stockpulse.app"
-    EMAIL_HOST: str = "smtp.example.com"
-    EMAIL_PORT: int = 587
-    EMAIL_USER: str = "user"
-    EMAIL_PASSWORD: str = "password"
+    # Email
+    EMAIL_FROM: Optional[str] = None
+    EMAIL_HOST: Optional[str] = None
+    EMAIL_PORT: Optional[int] = None
+    EMAIL_USER: Optional[str] = None
+    EMAIL_PASSWORD: Optional[str] = None
 
+    # Rate Limiting
     RATE_LIMIT_RPM: int = 120
 
+    # Market APIs
     MARKET_DATA_SOURCE: str = "yfinance"
     ALPHA_VANTAGE_API_KEY: Optional[str] = None
     FINNHUB_API_KEY: Optional[str] = None
+
     DEFAULT_TICKERS: str = "AAPL,TSLA,INFY,TCS"
 
-    # class Config:
-    #     env_file = ".env"
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
 
-settings = Settings()
 
-
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
