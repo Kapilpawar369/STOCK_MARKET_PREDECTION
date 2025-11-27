@@ -34,6 +34,8 @@ class Settings(BaseSettings):
     FINNHUB_API_KEY: Optional[str] = None
 
     DEFAULT_TICKERS: str = "AAPL,TSLA,INFY,TCS"
+    STOCK_API_KEY: str
+
 
     class Config:
         env_file = ".env"

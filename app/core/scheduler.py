@@ -9,6 +9,7 @@ from app.jobs.cleanup_tasks import run_cleanup
 # ✅ Use explicit timezone to avoid server drift bugs
 scheduler = BackgroundScheduler(timezone="Asia/Kolkata")
 
+scheduler.add_job(run_stock_refresh, "cron", hour=5, minute=0, id="stock_refresh")
 
 def start_scheduler():
     if scheduler.running:
