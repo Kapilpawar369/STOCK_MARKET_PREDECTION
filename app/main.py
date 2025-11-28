@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import sentry_sdk
 
-from app.api.v1 import auth, stocks, users, wishlist, payments, notifications
+from app.api.v1 import auth, stocks, users, wishlist, payments, notifications,orders
 from app.api.deps import init_dependencies
 from app.core.startup import on_startup, on_shutdown
 from app.middlewares.logging import LoggingMiddleware
@@ -50,6 +50,7 @@ app.include_router(stocks.router, prefix="/api/v1", tags=["stocks"])
 app.include_router(wishlist.router, prefix="/api/v1", tags=["wishlist"])
 app.include_router(payments.router, prefix="/api/v1", tags=["payments"])
 app.include_router(notifications.router, prefix="/api/v1", tags=["notifications"])
+app.include_router(orders.router, prefix="/api/v1", tags=["orders", "portfolio"])
 
 
 # DEPENDENCY INIT

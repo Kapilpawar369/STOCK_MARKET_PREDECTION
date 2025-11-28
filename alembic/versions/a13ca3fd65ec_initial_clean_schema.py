@@ -1,8 +1,8 @@
-"""initial postgres schema
+"""initial clean schema
 
-Revision ID: d477c45434b9
+Revision ID: a13ca3fd65ec
 Revises: 
-Create Date: 2025-11-27 10:44:42.259617
+Create Date: 2025-11-28 17:07:05.519140
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'd477c45434b9'
+revision: str = 'a13ca3fd65ec'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -60,12 +60,17 @@ def upgrade() -> None:
     op.create_index(op.f('ix_notifications_user_id'), 'notifications', ['user_id'], unique=False)
     op.create_table('payments',
     sa.Column('id', sa.String(), nullable=False),
-    sa.Column('user_id', sa.String(), nullable=True),
-    sa.Column('amount', sa.Float(), nullable=True),
-    sa.Column('currency', sa.String(), nullable=True),
-    sa.Column('status', sa.String(), nullable=True),
+    sa.Column('user_id', sa.String(), nullable=False),
+    sa.Column('amount', sa.Numeric(precision=12, scale=2), nullable=False),
+    sa.Column('currency', sa.String(), nullable=False),
+    sa.Column('status', sa.Enum('CREATED', 'SUCCESS', 'FAILED', name='paymentstatus'), nullable=False),
+    sa.Column('provider', sa.Enum('RAZORPAY', 'STRIPE', 'PAYPAL', name='paymentprovider'), nullable=True),
+    sa.Column('provider_order_id', sa.String(), nullable=True),
+    sa.Column('provider_payment_id', sa.String(), nullable=True),
+    sa.Column('provider_signature', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_payments_id'), 'payments', ['id'], unique=False)

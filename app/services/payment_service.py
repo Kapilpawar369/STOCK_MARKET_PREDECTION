@@ -2,7 +2,7 @@ import uuid
 from typing import List
 from sqlalchemy.orm import Session
 
-from app.models.payment import Payment
+from app.models.payment import Payment, PaymentStatus
 from app.schemas.payment import PaymentCreate, PaymentOut
 from app.core.exceptions import CustomError
 
@@ -31,6 +31,7 @@ class PaymentService:
                 amount=p.amount,
                 currency=p.currency,
                 status=p.status,
+                provider=p.provider,
             )
             for p in payments
         ]
@@ -53,8 +54,8 @@ class PaymentService:
             user_id=user_id,
             amount=payload.amount,
             currency=payload.currency.upper(),
-            status="CREATED",
-            provider="manual", 
+            status=PaymentStatus.CREATED,   
+            provider="RAZORPAY",            
         )
 
         self.db.add(payment)
@@ -62,18 +63,17 @@ class PaymentService:
         try:
             self.db.commit()
             self.db.refresh(payment)
-        except Exception:
+        except Exception as e:
             self.db.rollback()
             raise CustomError(
-                "Payment creation failed, please try again",
+                f"Payment creation failed: {str(e)}",
                 500
             )
 
         return PaymentOut(
-        id=payment.id,
-        amount=payment.amount,
-        currency=payment.currency,
-        status=payment.status,
-        provider=payment.provider,  
-    )
-
+            id=payment.id,
+            amount=payment.amount,
+            currency=payment.currency,
+            status=payment.status,
+            provider=payment.provider,
+        )
