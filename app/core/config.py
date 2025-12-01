@@ -55,8 +55,10 @@ class Settings(BaseSettings):
     # ─────────────────────────────
     # PAYMENT (Razorpay)
     # ─────────────────────────────
-    RAZORPAY_KEY_ID: Optional[str] = None
-    RAZORPAY_KEY_SECRET: Optional[str] = None
+    STRIPE_SECRET_KEY: Optional[str] = None
+    STRIPE_PUBLISHABLE_KEY: Optional[str] = None
+    STRIPE_WEBHOOK_SECRET: Optional[str] = None
+
 
     class Config:
         env_file = ".env"

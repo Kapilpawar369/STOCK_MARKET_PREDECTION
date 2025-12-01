@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import sentry_sdk
 
 from app.api.v1 import auth, stocks, users, wishlist, payments, notifications,orders
+from app.api.v1 import demo as demo_router
 from app.api.deps import init_dependencies
 from app.core.startup import on_startup, on_shutdown
 from app.middlewares.logging import LoggingMiddleware
@@ -11,7 +12,9 @@ from app.middlewares.request_id import RequestIDMiddleware
 from app.middlewares.throttling import ThrottlingMiddleware
 from app.seed.stock_seed import seed_stocks
 from app.core.exceptions import CustomError, custom_error_handler
-
+from app.api.v1 import webhooks
+from fastapi.staticfiles import StaticFiles
+from app.api.v1 import payments_stripe
 
 
 
@@ -42,6 +45,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
 #  ROUTERS
 app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
@@ -51,7 +55,9 @@ app.include_router(wishlist.router, prefix="/api/v1", tags=["wishlist"])
 app.include_router(payments.router, prefix="/api/v1", tags=["payments"])
 app.include_router(notifications.router, prefix="/api/v1", tags=["notifications"])
 app.include_router(orders.router, prefix="/api/v1", tags=["orders", "portfolio"])
-
+# app.include_router(demo_router.router, prefix="/api/v1")
+app.include_router(webhooks.router, prefix="/api/v1")
+app.include_router(payments_stripe.router, prefix="/api/v1", tags=["Stripe Payments"])
 
 # DEPENDENCY INIT
 init_dependencies(app)

@@ -11,17 +11,15 @@ from sqlalchemy import (
 from app.core.database import Base
 
 
-# Payment Status Enum
 class PaymentStatus(enum.Enum):
     CREATED = "CREATED"
     SUCCESS = "SUCCESS"
     FAILED = "FAILED"
 
 
-# Payment Provider Enum (Future-ready)
 class PaymentProvider(enum.Enum):
-    RAZORPAY = "razorpay"
     STRIPE = "stripe"
+    RAZORPAY = "razorpay"
     PAYPAL = "paypal"
 
 
@@ -30,7 +28,6 @@ class Payment(Base):
 
     id = Column(String, primary_key=True, index=True)
 
-    # Proper ForeignKey with cascade delete
     user_id = Column(
         String,
         ForeignKey("users.id", ondelete="CASCADE"),
@@ -38,7 +35,6 @@ class Payment(Base):
         index=True,
     )
 
-    # Finance-safe data type
     amount = Column(Numeric(12, 2), nullable=False)
     currency = Column(String, nullable=False)
 
@@ -48,12 +44,15 @@ class Payment(Base):
         nullable=False,
     )
 
-    # Scalable payment gateway support
-    provider = Column(Enum(PaymentProvider), nullable=True)
+    provider = Column(
+        Enum(PaymentProvider),
+        nullable=False,
+        default=PaymentProvider.STRIPE,
+    )
 
-    provider_order_id = Column(String, nullable=True)
-    provider_payment_id = Column(String, nullable=True)
-    provider_signature = Column(String, nullable=True)
+    provider_order_id = Column(String, nullable=True)     # yaha Stripe session id rakhenge
+    provider_payment_id = Column(String, nullable=True)   # Stripe payment_intent id
+    provider_signature = Column(String, nullable=True)    # optional
 
     created_at = Column(
         DateTime(timezone=True),
