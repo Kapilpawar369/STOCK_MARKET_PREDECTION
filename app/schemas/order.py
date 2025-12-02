@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
-from typing import List
+# app/schemas/order.py
 from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel, Field
 
 
 class OrderCreate(BaseModel):
@@ -8,7 +9,10 @@ class OrderCreate(BaseModel):
     quantity: int = Field(..., gt=0, example=5)
     price_per_unit: float = Field(..., gt=0, example=3500.0)
     currency: str = Field(default="INR", example="INR")
-    payment_id: str = Field(..., example="f3a21b9e-1234-5678-9012-abcdef123456")
+    payment_id: Optional[str] = Field(
+        None,
+        description="Payment ID from payments table (must be SUCCESS for real purchase)",
+    )
 
 
 class OrderOut(BaseModel):
@@ -19,14 +23,8 @@ class OrderOut(BaseModel):
     total_price: float
     currency: str
     status: str
+    payment_id: Optional[str] = None
     created_at: datetime
 
     class Config:
-        from_attributes = True
-
-
-class PortfolioItem(BaseModel):
-    symbol: str
-    total_quantity: int
-    avg_buy_price: float
-    total_invested: float
+        from_attributes = True  # Pydantic v2

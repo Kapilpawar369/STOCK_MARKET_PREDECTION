@@ -55,7 +55,6 @@ app.include_router(wishlist.router, prefix="/api/v1", tags=["wishlist"])
 app.include_router(payments.router, prefix="/api/v1", tags=["payments"])
 app.include_router(notifications.router, prefix="/api/v1", tags=["notifications"])
 app.include_router(orders.router, prefix="/api/v1", tags=["orders", "portfolio"])
-# app.include_router(demo_router.router, prefix="/api/v1")
 app.include_router(webhooks.router, prefix="/api/v1")
 app.include_router(payments_stripe.router, prefix="/api/v1", tags=["Stripe Payments"])
 

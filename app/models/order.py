@@ -1,24 +1,20 @@
 # app/models/order.py
-import uuid
-from datetime import datetime
-
+import enum
 from sqlalchemy import (
     Column,
     String,
     Integer,
-    Float,
+    Numeric,
+    Enum,
     DateTime,
     ForeignKey,
-    Enum as SAEnum,
     func,
 )
 from sqlalchemy.orm import relationship
-from enum import Enum
-
 from app.core.database import Base
 
 
-class OrderStatus(str, Enum):
+class OrderStatus(enum.Enum):
     PENDING = "PENDING"
     COMPLETED = "COMPLETED"
     CANCELLED = "CANCELLED"
@@ -27,22 +23,43 @@ class OrderStatus(str, Enum):
 class Order(Base):
     __tablename__ = "orders"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(String, primary_key=True, index=True)
 
-    user_id = Column(String, ForeignKey("users.id"), nullable=False)
-    symbol = Column(String, nullable=False)
+    user_id = Column(
+        String,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
 
+    symbol = Column(String, nullable=False)  # e.g. TCS, AAPL, TSLA
     quantity = Column(Integer, nullable=False)
-    price_per_unit = Column(Float, nullable=False)
-    total_price = Column(Float, nullable=False)
+
+    # Finance-safe types
+    price_per_unit = Column(Numeric(12, 2), nullable=False)
+    total_price = Column(Numeric(14, 2), nullable=False)
 
     currency = Column(String, nullable=False, default="INR")
-    status = Column(SAEnum(OrderStatus), nullable=False, default=OrderStatus.COMPLETED)
 
-    payment_id = Column(String, ForeignKey("payments.id"), nullable=True)
+    status = Column(
+        Enum(OrderStatus),
+        nullable=False,
+        default=OrderStatus.COMPLETED,
+    )
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    # Optional – link to payment
+    payment_id = Column(
+        String,
+        ForeignKey("payments.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
 
-    # Optional relationships
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+    )
+
+    # relationships (optional, for joins)
     user = relationship("User", backref="orders")
-    payment = relationship("Payment", backref="orders", lazy="joined")
+    payment = relationship("Payment", backref="orders")
