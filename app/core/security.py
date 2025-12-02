@@ -5,6 +5,7 @@ import jwt
 from jwt import PyJWTError, ExpiredSignatureError   # ✅ correct exceptions
 from passlib.context import CryptContext
 from app.core.config import get_settings
+import random
 
 settings = get_settings()
 SECRET_KEY = settings.SECRET_KEY
@@ -59,3 +60,8 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 def hash_password(plain: str) -> str:
     return pwd_context.hash(plain)
+
+def generate_otp(length: int = 6) -> str:
+    """Generates a random numeric OTP of the specified length."""
+    # Ensure it is a string of digits
+    return "".join([str(random.randint(0, 9)) for _ in range(length)])

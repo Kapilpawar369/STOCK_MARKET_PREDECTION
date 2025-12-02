@@ -39,6 +39,24 @@ class LoginRequest(BaseModel):
         }
     )
 
+class OTPVerificationRequest(BaseModel):
+    """Schema for verifying a user using the received OTP."""
+    email: EmailStr = Field(..., example="user@example.com")
+    otp: str = Field(..., min_length=6, max_length=6, example="123456")
+
+    @field_validator("email")
+    @classmethod
+    def normalize_email(cls, v: str) -> str:
+        return v.lower()
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "email": "user@example.com",
+                "otp": "123456"
+            }
+        }
+    )
 
 class Token(BaseModel):
     access_token: str

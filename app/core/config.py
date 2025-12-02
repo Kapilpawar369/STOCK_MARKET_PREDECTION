@@ -38,15 +38,17 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     REDIS_URL: Optional[str] = None
 
-    # ─────────────────────────────
-    # EMAIL
-    # ─────────────────────────────
-    EMAIL_FROM: Optional[str] = None
-    EMAIL_HOST: Optional[str] = None
-    EMAIL_PORT: Optional[int] = None
-    EMAIL_USER: Optional[str] = None
-    EMAIL_PASSWORD: Optional[str] = None
+# Email
+    SMTP_HOST: str
+    SMTP_PORT: int
+    SMTP_USER: str
+    SMTP_PASSWORD: str
+    EMAILS_FROM_EMAIL: str # Renamed for clarity, using EMAIL_FROM is fine too.
 
+    # ─────────────────────────────
+    # OTP CONFIG - NEW
+    # ─────────────────────────────
+    OTP_EXPIRY_MINUTES: int = 5 # Default validity time for the OTP
     # ─────────────────────────────
     # RATE LIMITING
     # ─────────────────────────────
