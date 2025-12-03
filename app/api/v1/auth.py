@@ -54,10 +54,15 @@ def verify_user_otp(payload: OTPVerificationRequest, db: Session = Depends(get_d
 # -------------------------------------------------------------
 # 3. LOGIN (Updated to check for is_verified)
 # -------------------------------------------------------------
-@router.post("/auth/login", response_model=Token, summary="Login user")
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
+# @router.post("/auth/login", response_model=Token, summary="Login user")
+# def login(payload: LoginRequest, db: Session = Depends(get_db_dep)):
+#     service = AuthService(db)
+#     return service.login(payload)
+# #
+@router.post("/auth/login", response_model=Token, summary="Login user and get JWT")
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db_dep)): 
     service = AuthService(db)
-    return service.login(payload)
+    return service.login(form_data.username, form_data.password)
 
 # ... The rest of the code remains the same ...
 

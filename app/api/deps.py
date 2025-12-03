@@ -7,12 +7,12 @@ from jwt import InvalidTokenError
 
 from app.core.database import get_db
 from app.core.config import get_settings
-from app.core.exceptions import CustomError   # ✅ ONLY CustomError
+from app.core.exceptions import CustomError   # ONLY CustomError
 
 settings = get_settings()
 
 
-# ✅ CORRECT DB DEPENDENCY (NO CONNECTION LEAK)
+# CORRECT DB DEPENDENCY (NO CONNECTION LEAK)
 def get_db_dep() -> Session:
     db = next(get_db())
     try:
@@ -21,11 +21,12 @@ def get_db_dep() -> Session:
         db.close()
 
 
-# ✅ OAUTH2 FOR SWAGGER
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/oauth-login")
+# OAUTH2 FOR SWAGGER
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
-# ✅ CLEAN CURRENT USER DEPENDENCY
+# CLEAN CURRENT USER DEPENDENCY
 def get_current_user_id(token: str = Depends(oauth2_scheme)) -> str:
     try:
         payload = jwt.decode(
@@ -44,6 +45,6 @@ def get_current_user_id(token: str = Depends(oauth2_scheme)) -> str:
         raise CustomError("Invalid or expired token", 401)
 
 
-# ✅ APP-LEVEL DEPENDENCY REGISTRATION
+# APP-LEVEL DEPENDENCY REGISTRATION
 def init_dependencies(app: FastAPI):
     app.state.settings = settings

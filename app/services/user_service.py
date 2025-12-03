@@ -35,7 +35,8 @@ class UserService:
         return UserRead(
             id=user.id,
             email=user.email,
-            is_active=user.is_active
+            is_active=user.is_active,
+            is_verified=user.is_verified,
         )
 
 

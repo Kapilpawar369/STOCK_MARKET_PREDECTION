@@ -84,9 +84,9 @@ class AuthService:
         # 1. Check if OTP matches
         if user.otp_code != payload.otp:
             # Clear OTP fields on failure to increase security slightly
+            
             user.otp_code = None
             user.otp_expires_at = None
-            self.db.commit()
             raise CustomError("Invalid OTP provided", 401)
         
         # 2. Check for expiry
@@ -112,10 +112,10 @@ class AuthService:
     # -------------------------------------------------------------
     # 3. EXISTING: LOGIN (Requires verification check)
     # -------------------------------------------------------------
-    def login(self, payload: LoginRequest) -> Token:
-        user = self.db.query(User).filter(User.email == payload.email.lower(),User.is_deleted == False).first()
+    def login(self, email: str, password: str):
+        user = self.db.query(User).filter(User.email == email.lower(),User.is_deleted == False).first()
 
-        if not user or not verify_password(payload.password, user.hashed_password):
+        if not user or not verify_password(password, user.hashed_password):
             raise CustomError("Invalid email or password", 401)
         
         # NEW CHECK: User must be verified to log in
